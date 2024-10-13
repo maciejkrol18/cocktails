@@ -1,5 +1,4 @@
 import FavoriteButton from '@/components/favorite-button'
-import Hero from '@/components/hero'
 import { Button } from '@/components/ui/button'
 import client from '@/lib/client'
 import type { CocktailDetailResponse } from '@/lib/types'
@@ -43,9 +42,13 @@ function MetadataEntry({
 }
 
 async function getCocktail(id: string) {
-  const { data, status } = await client.get(`/cocktails/${id}`)
-  if (status !== 200) notFound()
-  return data as CocktailDetailResponse
+  try {
+    const { data, status } = await client.get(`/cocktails/${id}`)
+    if (status !== 200) notFound()
+    return data as CocktailDetailResponse
+  } catch {
+    notFound()
+  }
 }
 
 export default async function CocktailPage({ params }: CocktailPageProps) {
@@ -151,9 +154,6 @@ export default async function CocktailPage({ params }: CocktailPageProps) {
                 >
                   <Scale className="inline size-4" />
                   {ingredient.measure}
-                </p>
-                <p className="text-gray-500">
-                  {ingredient.description?.substring(0, 100).concat('...')}
                 </p>
               </li>
             ))}
