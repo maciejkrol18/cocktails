@@ -3,6 +3,7 @@ import localFont from 'next/font/local'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import Header from '@/components/header'
+import { TailwindIndicator } from '@/components/tailwind-indicator'
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -25,10 +26,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background font-sans min-h-screen`}
       >
+        <TailwindIndicator />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

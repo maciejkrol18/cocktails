@@ -12,7 +12,7 @@ export default function CocktailResult({ cocktail }: CocktailResultProps) {
     <Link
       className="flex flex-col gap-4 items-center justify-center bg-card p-4 rounded-lg shadow-md hover:ring hover:ring-ring/30 transition-shadow"
       key={cocktail.id}
-      href={`/cocktails/${cocktail.id}`}
+      href={`/${cocktail.id}`}
     >
       {cocktail.imageUrl ? (
         <Image

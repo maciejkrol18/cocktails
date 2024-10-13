@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import SolvroLogo from '../../public/logo_solvro_mono.png'
 import { ThemeSwitch } from './theme-switch'
+import Link from 'next/link'
+import { Button } from './ui/button'
 
 export default function Header() {
   return (
@@ -12,6 +14,17 @@ export default function Header() {
         alt="logo"
         className="invert dark:filter-none"
       />
+      <div className="flex gap-4 items-center">
+        <Button asChild variant={'ghost'}>
+          <Link href="/cocktails">Cocktails</Link>
+        </Button>
+        <Button asChild variant={'ghost'}>
+          <Link href="/ingredients">Ingredients</Link>
+        </Button>
+        <Button asChild variant={'ghost'}>
+          <Link href="/favorites">Favorites</Link>
+        </Button>
+      </div>
       <ThemeSwitch />
     </div>
   )

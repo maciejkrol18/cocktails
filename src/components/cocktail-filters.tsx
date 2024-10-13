@@ -1,18 +1,17 @@
 'use client'
 
-import type { CocktailCategoriesResponse, CocktailQueryOptions } from '@/lib/types'
-import SearchBar from './search-bar'
+import type { CocktailQueryOptions } from '@/lib/types'
 import { useSearchParams, usePathname, useRouter } from 'next/navigation'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
-import { Input } from './ui/input'
 import { Sheet, SheetTrigger, SheetContent } from './ui/sheet'
-import { Textarea } from './ui/textarea'
-import { act, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
 import client from '@/lib/client'
 import { List, Search } from 'lucide-react'
 import { stripLikeOperator } from '@/lib/utils'
+import MultiSelect from './multiselect'
+import TextFilter from './text-filter'
 
 interface CocktailFiltersProps {
   searchInputPlaceholder: string
@@ -48,14 +47,12 @@ export default function CocktailFilters({
   const [activeGlasses, setActiveGlasses] = useState<string[]>([])
 
   useEffect(() => {
-    console.log(activeGlasses)
     handleFilterChange('glass', activeGlasses.join(','))
   }, [activeGlasses])
 
   useEffect(() => {
     const fetchGlasses = async () => {
       const { data } = await client.get('/cocktails/glasses')
-      console.log('Glasses:', data.data)
       setGlasses(data.data)
     }
     fetchGlasses()
@@ -79,25 +76,24 @@ export default function CocktailFilters({
     router.push(`${pathname}?${params.toString()}`, { scroll: false })
   }
 
-  const handleInstructionsChange = useDebouncedCallback((value: string) => {
-    handleFilterChange('instructions', `%${value}%`)
-  }, 300)
-
-  const handleSearchQueryChange = useDebouncedCallback((value: string) => {
-    handleFilterChange('name', value ? `%${value}%` : '')
-  }, 300)
+  const handleTextSearchChange = useDebouncedCallback(
+    (filter: 'name' | 'instructions', value: string) => {
+      handleFilterChange(filter, value ? `%${value}%` : '')
+    },
+    300,
+  )
 
   return (
     <div className="flex gap-2">
       <div className="relative w-full">
         <Search className="absolute top-1/2 left-2 -translate-y-1/2 text-gray-500 text-xl size-4" />
-        <Input
+        <TextFilter
+          componentType="input"
           placeholder={searchInputPlaceholder}
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value)
-            handleSearchQueryChange(e.target.value)
-          }}
+          stateValue={searchQuery}
+          stateSetter={setSearchQuery}
+          filterName="name"
+          filterSetter={handleTextSearchChange}
           className="pl-8"
         />
       </div>
@@ -115,75 +111,30 @@ export default function CocktailFilters({
                 <br />
                 <LabelDescription content="Search by the content of the instructions" />
               </Label>
-              <Textarea
+              <TextFilter
                 id="instructions"
-                value={instructions}
-                onChange={(e) => {
-                  setInstructions(e.target.value)
-                  handleInstructionsChange(e.target.value)
-                }}
+                componentType="textarea"
+                placeholder={"e.g. 'Pour all the ingredients into a glass'"}
+                stateValue={instructions}
+                stateSetter={setInstructions}
+                filterName="instructions"
+                filterSetter={handleTextSearchChange}
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <Label>
-                Categories
-                <br />
-                <LabelDescription content="Search by the categories of the cocktails" />
-              </Label>
-              <div className="flex flex-wrap justify-end gap-2">
-                {categories.length > 0 ? (
-                  categories.map((category) => (
-                    <Button
-                      key={category}
-                      variant={'outline'}
-                      className={`px-2 py-1 text-xs ${activeCategories.includes(category) ? 'bg-primary text-primary-foreground' : ''}`}
-                      onClick={() => {
-                        if (activeCategories.includes(category)) {
-                          setActiveCategories(
-                            activeCategories.filter((c) => c !== category),
-                          )
-                        } else {
-                          setActiveCategories([...activeCategories, category])
-                        }
-                      }}
-                    >
-                      {category}
-                    </Button>
-                  ))
-                ) : (
-                  <p>Loading available categories...</p>
-                )}
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label>
-                Glasses
-                <br />
-                <LabelDescription content="Search by the type of glass the cocktail is served in" />
-              </Label>
-              <div className="flex flex-wrap justify-end gap-2">
-                {glasses.length > 0 ? (
-                  glasses.map((glass) => (
-                    <Button
-                      key={glass}
-                      variant={'outline'}
-                      className={`px-2 py-1 text-xs ${activeGlasses.includes(glass) ? 'bg-primary text-primary-foreground' : ''}`}
-                      onClick={() => {
-                        if (activeGlasses.includes(glass)) {
-                          setActiveGlasses(activeGlasses.filter((g) => g !== glass))
-                        } else {
-                          setActiveGlasses([...activeGlasses, glass])
-                        }
-                      }}
-                    >
-                      {glass}
-                    </Button>
-                  ))
-                ) : (
-                  <p>Loading available glasses...</p>
-                )}
-              </div>
-            </div>
+            <MultiSelect
+              active={activeCategories}
+              activeSetter={setActiveCategories}
+              source={categories}
+              title="Categories"
+              description="Search by the categories of the cocktails"
+            />
+            <MultiSelect
+              active={activeGlasses}
+              activeSetter={setActiveGlasses}
+              source={glasses}
+              title="Glasses"
+              description="Search by the type of glass the cocktail is served in"
+            />
           </div>
         </SheetContent>
       </Sheet>
