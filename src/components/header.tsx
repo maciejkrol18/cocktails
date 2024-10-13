@@ -16,13 +16,10 @@ export default function Header() {
       />
       <div className="flex gap-4 items-center">
         <Button asChild variant={'ghost'}>
-          <Link href="/cocktails">Cocktails</Link>
+          <Link href="/">Cocktails</Link>
         </Button>
         <Button asChild variant={'ghost'}>
           <Link href="/ingredients">Ingredients</Link>
-        </Button>
-        <Button asChild variant={'ghost'}>
-          <Link href="/favorites">Favorites</Link>
         </Button>
       </div>
       <ThemeSwitch />

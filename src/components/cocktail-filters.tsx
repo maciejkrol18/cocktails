@@ -12,6 +12,9 @@ import { List, Search } from 'lucide-react'
 import { stripLikeOperator } from '@/lib/utils'
 import MultiSelect from './multiselect'
 import TextFilter from './text-filter'
+import { Switch } from './ui/switch'
+
+const LOCAL_STORAGE_KEY = 'cocktails-favorites'
 
 interface CocktailFiltersProps {
   searchInputPlaceholder: string
@@ -28,6 +31,9 @@ export default function CocktailFilters({
   const pathname = usePathname()
   const router = useRouter()
 
+  const [favoritesOnly, setFavoritesOnly] = useState(false)
+  const [favoriteCocktails, setFavoriteCocktails] = useState<number[]>([])
+
   const [categories, setCategories] = useState<string[]>([])
   const [activeCategories, setActiveCategories] = useState<string[]>([])
 
@@ -35,28 +41,12 @@ export default function CocktailFilters({
     handleFilterChange('category', activeCategories.join(','))
   }, [activeCategories])
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const { data } = await client.get('/cocktails/categories')
-      setCategories(data.data)
-    }
-    fetchCategories()
-  }, [])
-
   const [glasses, setGlasses] = useState<string[]>([])
   const [activeGlasses, setActiveGlasses] = useState<string[]>([])
 
   useEffect(() => {
     handleFilterChange('glass', activeGlasses.join(','))
   }, [activeGlasses])
-
-  useEffect(() => {
-    const fetchGlasses = async () => {
-      const { data } = await client.get('/cocktails/glasses')
-      setGlasses(data.data)
-    }
-    fetchGlasses()
-  }, [])
 
   const [instructions, setInstructions] = useState<string>(
     stripLikeOperator(searchParams?.get('instructions')),
@@ -83,6 +73,31 @@ export default function CocktailFilters({
     300,
   )
 
+  useEffect(() => {
+    if (favoritesOnly) {
+      handleFilterChange('id', favoriteCocktails.join(','))
+    } else {
+      handleFilterChange('id', '')
+    }
+  }, [favoritesOnly])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const { data } = await client.get('/cocktails/categories')
+      setCategories(data.data)
+    }
+    const fetchGlasses = async () => {
+      const { data } = await client.get('/cocktails/glasses')
+      setGlasses(data.data)
+    }
+    const favorites = localStorage.getItem(LOCAL_STORAGE_KEY)
+    if (favorites) {
+      setFavoriteCocktails(JSON.parse(favorites))
+    }
+    fetchCategories()
+    fetchGlasses()
+  }, [])
+
   return (
     <div className="flex gap-2">
       <div className="relative w-full">
@@ -105,6 +120,14 @@ export default function CocktailFilters({
         </SheetTrigger>
         <SheetContent className="overflow-auto">
           <div className="flex flex-col gap-8 py-8 text-right">
+            <div className="flex flex-col gap-2 items-end">
+              <Label htmlFor="instructions">
+                Favorites
+                <br />
+                <LabelDescription content="Display only cocktails you have favorited" />
+              </Label>
+              <Switch checked={favoritesOnly} onCheckedChange={setFavoritesOnly} />
+            </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="instructions">
                 Instructions
