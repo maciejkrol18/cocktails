@@ -2,7 +2,7 @@ import FavoriteButton from '@/components/favorite-button'
 import { Button } from '@/components/ui/button'
 import client from '@/lib/client'
 import type { CocktailDetailResponse } from '@/lib/types'
-import { cn } from '@/lib/utils'
+import { cn, getImageLoader } from '@/lib/utils'
 import {
   ArrowLeft,
   Citrus,
@@ -70,6 +70,7 @@ export default async function CocktailPage({ params }: CocktailPageProps) {
           alt={data.name}
           width={400}
           height={400}
+          placeholder={`data:image/${getImageLoader(400, 400)}`}
           className="rounded-full mx-auto object-cover"
         />
       ) : (
@@ -112,6 +113,7 @@ export default async function CocktailPage({ params }: CocktailPageProps) {
                       alt={ingredient.name}
                       width={40}
                       height={40}
+                      placeholder={`data:image/${getImageLoader(40, 40)}`}
                       className="rounded-full bg-gray-800"
                     />
                   ) : (

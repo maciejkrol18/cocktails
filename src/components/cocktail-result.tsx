@@ -1,4 +1,5 @@
 import type { Cocktail } from '@/lib/types'
+import { getImageLoader } from '@/lib/utils'
 import { CupSoda, Grid2X2, Martini, Wine } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -20,6 +21,7 @@ export default function CocktailResult({ cocktail }: CocktailResultProps) {
           alt={cocktail.name}
           width={200}
           height={200}
+          placeholder={`data:image/${getImageLoader(200, 200)}`}
           className="rounded-full"
         />
       ) : (
