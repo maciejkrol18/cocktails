@@ -31,8 +31,10 @@ export default function CocktailFilters({
   const pathname = usePathname()
   const router = useRouter()
 
-  const [favoritesOnly, setFavoritesOnly] = useState(false)
+  const [favoritesOnly, setFavoritesOnly] = useState<boolean>(false)
   const [favoriteCocktails, setFavoriteCocktails] = useState<number[]>([])
+
+  const [showAlcoholic, setShowAlcoholic] = useState<boolean>(true)
 
   const [categories, setCategories] = useState<string[]>([])
   const [glasses, setGlasses] = useState<string[]>([])
@@ -105,7 +107,7 @@ export default function CocktailFilters({
               <Label htmlFor="instructions">
                 Favorites
                 <br />
-                <LabelDescription content="Display only cocktails you have favorited" />
+                <LabelDescription content="Only show cocktails you have favorited" />
               </Label>
               <Switch
                 checked={favoritesOnly}
@@ -114,6 +116,22 @@ export default function CocktailFilters({
                   checked
                     ? handleFilterChange('id', favoriteCocktails.join(','))
                     : handleFilterChange('id', '')
+                }}
+              />
+            </div>
+            <div className="flex flex-col gap-2 items-end">
+              <Label htmlFor="instructions">
+                Alcoholic
+                <br />
+                <LabelDescription content="Show cocktails which contain alcohol" />
+              </Label>
+              <Switch
+                checked={showAlcoholic}
+                onCheckedChange={(checked) => {
+                  setShowAlcoholic(checked)
+                  checked
+                    ? handleFilterChange('alcoholic', '')
+                    : handleFilterChange('alcoholic', 'false')
                 }}
               />
             </div>
