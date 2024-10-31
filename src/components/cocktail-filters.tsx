@@ -35,18 +35,7 @@ export default function CocktailFilters({
   const [favoriteCocktails, setFavoriteCocktails] = useState<number[]>([])
 
   const [categories, setCategories] = useState<string[]>([])
-  const [activeCategories, setActiveCategories] = useState<string[]>([])
-
-  useEffect(() => {
-    handleFilterChange('category', activeCategories.join(','))
-  }, [activeCategories])
-
   const [glasses, setGlasses] = useState<string[]>([])
-  const [activeGlasses, setActiveGlasses] = useState<string[]>([])
-
-  useEffect(() => {
-    handleFilterChange('glass', activeGlasses.join(','))
-  }, [activeGlasses])
 
   const [instructions, setInstructions] = useState<string>(
     stripLikeOperator(searchParams?.get('instructions')),
@@ -72,14 +61,6 @@ export default function CocktailFilters({
     },
     300,
   )
-
-  useEffect(() => {
-    if (favoritesOnly) {
-      handleFilterChange('id', favoriteCocktails.join(','))
-    } else {
-      handleFilterChange('id', '')
-    }
-  }, [favoritesOnly])
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -126,7 +107,15 @@ export default function CocktailFilters({
                 <br />
                 <LabelDescription content="Display only cocktails you have favorited" />
               </Label>
-              <Switch checked={favoritesOnly} onCheckedChange={setFavoritesOnly} />
+              <Switch
+                checked={favoritesOnly}
+                onCheckedChange={(checked) => {
+                  setFavoritesOnly(checked)
+                  checked
+                    ? handleFilterChange('id', favoriteCocktails.join(','))
+                    : handleFilterChange('id', '')
+                }}
+              />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="instructions">
@@ -145,16 +134,18 @@ export default function CocktailFilters({
               />
             </div>
             <MultiSelect
-              active={activeCategories}
-              activeSetter={setActiveCategories}
-              source={categories}
+              active={searchParams.get('category')?.split(',') || []}
+              filterKey="category"
+              activeSetter={handleFilterChange}
+              source={categories.sort()}
               title="Categories"
               description="Search by the categories of the cocktails"
             />
             <MultiSelect
-              active={activeGlasses}
-              activeSetter={setActiveGlasses}
-              source={glasses}
+              active={searchParams.get('glass')?.split(',') || []}
+              activeSetter={handleFilterChange}
+              source={glasses.sort()}
+              filterKey="glass"
               title="Glasses"
               description="Search by the type of glass the cocktail is served in"
             />

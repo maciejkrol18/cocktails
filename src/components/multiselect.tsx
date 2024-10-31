@@ -1,3 +1,4 @@
+import type { CocktailFilter } from '@/lib/types'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
 
@@ -6,7 +7,8 @@ interface MultiSelectProps {
   description: string
   source: string[]
   active: string[]
-  activeSetter: (value: string[]) => void
+  filterKey: keyof CocktailFilter
+  activeSetter: (filter: keyof CocktailFilter, value?: string) => void
 }
 
 function LabelDescription({ content }: { content: string }) {
@@ -18,6 +20,7 @@ export default function MultiSelect({
   description,
   source,
   active,
+  filterKey,
   activeSetter,
 }: MultiSelectProps) {
   return (
@@ -36,9 +39,9 @@ export default function MultiSelect({
               className={`px-2 py-1 text-xs ${active.includes(element) ? 'bg-primary text-primary-foreground' : ''}`}
               onClick={() => {
                 if (active.includes(element)) {
-                  activeSetter(active.filter((el) => el !== element))
+                  activeSetter(filterKey, active.filter((el) => el !== element).join(','))
                 } else {
-                  activeSetter([...active, element])
+                  activeSetter(filterKey, [...active, element].join(','))
                 }
               }}
             >
