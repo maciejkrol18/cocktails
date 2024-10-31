@@ -4,13 +4,13 @@ import Hero from '@/components/hero'
 import SearchPagination from '@/components/search-pagination'
 
 import client from '@/lib/client'
-import type { CocktailQueryOptions, CocktailsResponse } from '@/lib/types'
+import type { CocktailFilter, CocktailsResponse } from '@/lib/types'
 
 interface HomeProps {
-  searchParams: CocktailQueryOptions
+  searchParams: CocktailFilter
 }
 
-async function getCocktails({ params }: { params?: CocktailQueryOptions }) {
+async function getCocktails({ params }: { params?: CocktailFilter }) {
   const { data } = await client.get('/cocktails', { params: params })
   return data as CocktailsResponse
 }

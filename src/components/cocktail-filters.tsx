@@ -1,6 +1,6 @@
 'use client'
 
-import type { CocktailQueryOptions } from '@/lib/types'
+import type { CocktailFilter } from '@/lib/types'
 import { useSearchParams, usePathname, useRouter } from 'next/navigation'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
@@ -55,7 +55,7 @@ export default function CocktailFilters({
     stripLikeOperator(searchParams?.get('q')),
   )
 
-  const handleFilterChange = (filter: keyof CocktailQueryOptions, value?: string) => {
+  const handleFilterChange = (filter: keyof CocktailFilter, value?: string) => {
     const params = new URLSearchParams(searchParams)
     if (value) {
       params.set(filter, value)
